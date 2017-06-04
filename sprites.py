@@ -74,14 +74,16 @@ class Square(pg.sprite.Sprite):
 
 	def update(self):
 
-		self.pos.x += self.vel.x
-
 		if self.pos.x < 0:
 			self.game.score += 1
-			self.vel.x = -self.vel.x + self.game.score * 0.01
+			self.vel.x = -self.vel.x + 0.1
+			print(self.vel.x)
 
 		if self.pos.x > WIDTH:
 			self.game.score += 1
-			self.vel.x = -self.vel.x - self.game.score * 0.01
+			self.vel.x = -self.vel.x - 0.1
+			print(self.vel.x)
+
+		self.pos.x += self.vel.x
 
 		self.rect.midbottom = self.pos
