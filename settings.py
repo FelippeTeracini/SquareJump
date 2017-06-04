@@ -13,6 +13,7 @@ HEIGHT = 480
 FPS = 60
 FONT_NAME = "times"
 BGCOLOR = LIGHT_GREY
+HS_FILE = "highscore.txt"
 
 # Player properties
 PLAYER_ACC = 1

@@ -5,6 +5,7 @@ import pygame as pg
 import random
 from settings import *
 from sprites import *
+from os import path
 
 # Class Jogo
 class Game:
@@ -18,14 +19,24 @@ class Game:
 		self.font_name = pg.font.match_font(FONT_NAME)
 		self.running = True
 		self.score = 0
+		self.load_data()
+
+	def load_data(self):
+		# load high score
+		self.dir = path.dirname(__file__)
+		with open(path.join(self.dir, HS_FILE), "r+") as hs:
+			try:
+				self.highscore = int(hs.read())
+			except:
+				self.highscore = 0
 
 	def new(self):
 		self.all_sprites = pg.sprite.Group()
 		self.platforms = pg.sprite.Group()
 		self.squares = pg.sprite.Group()
-		p1 = Platform(0, HEIGHT - 40, WIDTH, 40)
-		self.all_sprites.add(p1)
-		self.platforms.add(p1)
+		floor = Platform(0, HEIGHT - 40, WIDTH, 40)
+		self.all_sprites.add(floor)
+		self.platforms.add(floor)
 		self.square = Square(self, SQUARE_WIDTH, SQUARE_HEIGHT)
 		self.squares.add(self.square)
 		self.all_sprites.add(self.square)
@@ -53,6 +64,11 @@ class Game:
 		if hits:
 			self.playing = False
 
+		if self.score > self.highscore:
+			self.highscore = self.score
+			with open(path.join(self.dir, HS_FILE), "r+") as hs:
+				hs.write(str(self.highscore))
+
 	def events(self):
 		for event in pg.event.get():
 
@@ -70,6 +86,10 @@ class Game:
 		self.screen.fill(BGCOLOR)
 		self.all_sprites.draw(self.screen)
 		self.draw_text("Score: " + str(self.score), 24, BLACK, WIDTH / 2, HEIGHT / 4)
+		if self.score >= self.highscore and self.highscore != 0:
+			self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
+		else:
+			self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
 	
 		pg.display.flip()
 
@@ -78,6 +98,7 @@ class Game:
 		self.draw_text(TITLE, 48, RED, WIDTH / 2, HEIGHT / 4)
 		self.draw_text("Press A and D to move, SPACE to jump", 24, BLACK, WIDTH / 2, HEIGHT / 2)
 		self.draw_text("Press a key to play", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
+		self.draw_text("High Score: " + str(self.highscore), 24, BLACK, WIDTH / 2, 15)
 		pg.display.flip()
 		self.wait_for_key()
 
@@ -86,8 +107,12 @@ class Game:
 			return
 		self.screen.fill(BGCOLOR)
 		self.draw_text("GAME OVER", 48, RED, WIDTH / 2, HEIGHT / 4)
-		self.draw_text("Score: " + str(self.score), 36, BLACK, WIDTH / 2, HEIGHT / 2)
+		self.draw_text("Score: " + str(self.score), 36, BLACK, WIDTH / 2, (HEIGHT / 2) + 30)
 		self.draw_text("Press a key to play again", 24, BLACK, WIDTH / 2, HEIGHT * 3 / 4)
+		if self.score >= self.highscore and self.highscore != 0:
+			self.draw_text("NEW HIGH SCORE! " + str(self.highscore), 24, BLACK, WIDTH / 2, (HEIGHT / 4) - 30)
+		else:
+			self.draw_text("High Score: " + str(self.highscore), 36, BLACK, WIDTH / 2, (HEIGHT / 2) - 30)
 		pg.display.flip()
 		self.wait_for_key()
 
